@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
 import React from 'react'
-import InterviewCard from '../components/InterviewCard'
+import InterviewCard from '@/components/InterviewCard'
 import { dummyInterviews } from '@/constants'
 
 const page = () => {

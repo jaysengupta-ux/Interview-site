@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { getRandomInterviewCover } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import DisplayTechIcons from '@/components/ui/DisplayTechIcons';
+import DisplayTechIcons from './DisplayTechIcons';
 
 //coming from dummyInterview constants
 const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}
