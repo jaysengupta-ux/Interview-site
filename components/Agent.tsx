@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { vapi } from '@/lib/vapi.sdk'
 import React, { useState, useEffect } from 'react'
 import { interviewer } from "@/constants";
+import { createFeedback } from "@/lib/actions/general.action";
 
 enum CallStatus {
   INACTIVE = 'INACTIVE',
@@ -20,13 +21,14 @@ interface SavedMessage {
 }
 
 
-const Agent = ({userName, userId, type, interviewId, questions}: AgentProps) => {
+const Agent = ({userName, userId, type, interviewId, questions, feedbackId }: AgentProps) => {
 
   const router = useRouter();
 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([])
+   const [lastMessage, setLastMessage] = useState<string>("");
 
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
@@ -68,32 +70,66 @@ const Agent = ({userName, userId, type, interviewId, questions}: AgentProps) => 
     }
   }, []);
 
-  const handleGenerateFeedback =  async (messages: SavedMessage[]) => {
-    console.log('Generate feedback here');
+  // const handleGenerateFeedback =  async (messages: SavedMessage[]) => {
+  //   console.log('Generate feedback here');
 
-    const {success, id} = {
-      success: true,
-      id: 'feedback-id'
+  //   const {success, feedbackId: id} = await createFeedback({
+  //     interviewId: interviewId!,
+  //     userId: userId!,
+  //     transcript: messages,
+  
+  //   })
+
+  //   if(success && id) {
+  //     router.push(`/interview/${interviewId}/feedback`);
+  //   } else {
+  //     console.log('Error saving feedback');
+  //     router.push('/');
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if(callStatus === CallStatus.FINISHED) {
+  //     if(type === 'generate'){
+  //       router.push('/')
+  //     } else {
+  //       handleGenerateFeedback(messages);
+  //     }
+  //   }
+  // },[messages, callStatus, type, userId ]);
+
+    useEffect(() => {
+    if (messages.length > 0) {
+      setLastMessage(messages[messages.length - 1].content);
     }
 
-    //Todo: createa server action that generate feedback
-    if(success && id) {
-      router.push(`/interview/${interviewId}/feedback`);
-    } else {
-      console.log('Error saving feedback');
-      router.push('/');
-    }
-  }
+    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+      console.log("handleGenerateFeedback");
 
-  useEffect(() => {
-    if(callStatus === CallStatus.FINISHED) {
-      if(type === 'generate'){
-        router.push('/')
+      const { success, feedbackId: id } = await createFeedback({
+        interviewId: interviewId!,
+        userId: userId!,
+        transcript: messages,
+        feedbackId,
+      });
+
+      if (success && id) {
+        router.push(`/interview/${interviewId}/feedback`);
+      } else {
+        console.log("Error saving feedback");
+        router.push("/");
+      }
+    };
+
+    if (callStatus === CallStatus.FINISHED) {
+      if (type === "generate") {
+        router.push("/");
       } else {
         handleGenerateFeedback(messages);
       }
     }
-  },[messages, callStatus, type, userId]);
+  }, [messages, callStatus, feedbackId, interviewId, router, type, userId]);
+
 
   const handleCall = async() => {
     setCallStatus(CallStatus.CONNECTING);
@@ -133,7 +169,7 @@ const Agent = ({userName, userId, type, interviewId, questions}: AgentProps) => 
     vapi.stop();
   }
 
-  const latestMessage = messages[messages.length - 1]?.content;
+ 
 
   const isCallInactiveOrFinished = callStatus === CallStatus.INACTIVE || 
   callStatus === CallStatus.FINISHED;
@@ -165,10 +201,10 @@ const Agent = ({userName, userId, type, interviewId, questions}: AgentProps) => 
         {messages.length > 0 && (
           <div className="transcript-border">
             <div className="transcript">
-              <p key = {latestMessage} className ={cn(
+              <p key = {lastMessage} className ={cn(
                 'transition-opacity duration-500 opacity-0', 'animate-fadeIn opacity-100'
               )}>
-                {latestMessage}
+                {lastMessage}
               </p>
             </div>
           </div>

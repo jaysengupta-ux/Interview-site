@@ -1,4 +1,4 @@
-import { getInterviewById } from '@/lib/actions/general.action';
+import { getFeedbackByInterviewId, getInterviewById } from '@/lib/actions/general.action';
 import { redirect } from 'next/navigation';
 import Image from 'next/image'
 import React from 'react'
@@ -14,6 +14,9 @@ const InterviewDetails = async ({params}: RouteParams) => {
 
   const interview = await getInterviewById(id);
   if(!interview) redirect('/')
+
+
+
   return (
     <>
       <div className="flex flex-row gap-4 justify-between">
@@ -43,7 +46,7 @@ const InterviewDetails = async ({params}: RouteParams) => {
         interviewId={id}
         type="interview"
         questions={interview.questions}
-    
+        
       />
     </>
   )

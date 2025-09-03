@@ -155,39 +155,65 @@ End the conversation on a polite and positive note.
   },
 };
 
-export const feedbackSchema = z.object({
-  totalScore: z.number(),
-  categoryScores: z.tuple([
-    z.object({
-      name: z.literal("Communication Skills"),
-      score: z.number(),
-      comment: z.string(),
-    }),
-    z.object({
-      name: z.literal("Technical Knowledge"),
-      score: z.number(),
-      comment: z.string(),
-    }),
-    z.object({
-      name: z.literal("Problem Solving"),
-      score: z.number(),
-      comment: z.string(),
-    }),
-    z.object({
-      name: z.literal("Cultural Fit"),
-      score: z.number(),
-      comment: z.string(),
-    }),
-    z.object({
-      name: z.literal("Confidence and Clarity"),
-      score: z.number(),
-      comment: z.string(),
-    }),
-  ]),
-  strengths: z.array(z.string()),
-  areasForImprovement: z.array(z.string()),
-  finalAssessment: z.string(),
+
+
+
+// Define a reusable schema for score and comment
+const scoreAndCommentSchema = z.object({
+  score: z.number().min(0).max(100).describe("Score from 0 to 100"),
+  comment: z.string().describe("Detailed comment for this category"),
 });
+
+// The final, flattened schema
+export const feedbackSchema = z.object({
+  totalScore: z.number().min(0).max(100).describe("Overall score from 0 to 100"),
+
+  // Flattened categories instead of an array of objects
+  communicationSkills: scoreAndCommentSchema,
+  technicalKnowledge: scoreAndCommentSchema,
+  problemSolving: scoreAndCommentSchema,
+  culturalFit: scoreAndCommentSchema,
+  confidenceAndClarity: scoreAndCommentSchema,
+
+  strengths: z.array(z.string()).describe("List of candidate's strengths"),
+  areasForImprovement: z.array(z.string()).describe("List of areas for improvement"),
+  finalAssessment: z.string().describe("A final summary of the interview"),
+});
+
+
+// export const feedbackSchema = z.object({
+//   totalScore: z.number(),
+//   categoryScores: z.tuple([
+//     z.object({
+//       name: z.literal("Communication Skills"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Technical Knowledge"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Problem Solving"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Cultural Fit"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//     z.object({
+//       name: z.literal("Confidence and Clarity"),
+//       score: z.number(),
+//       comment: z.string(),
+//     }),
+//   ]),
+//   strengths: z.array(z.string()),
+//   areasForImprovement: z.array(z.string()),
+//   finalAssessment: z.string(),
+// });
 
 export const interviewCovers = [
   "/adobe.png",

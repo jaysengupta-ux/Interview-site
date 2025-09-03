@@ -1,4 +1,9 @@
 interface Feedback {
+  confidenceAndClarity: any;
+  culturalFit: any;
+  problemSolving: any;
+  technicalKnowledge: any;
+  communicationSkills: any;
   id: string;
   interviewId: string;
   totalScore: number;
