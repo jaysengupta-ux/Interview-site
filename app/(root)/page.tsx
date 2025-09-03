@@ -6,7 +6,8 @@ import Image from 'next/image'
 import React from 'react'
 import InterviewCard from '@/components/InterviewCard'
 import { dummyInterviews } from '@/constants'
-import { getCurrentUser, getInterviewsByUserId, getLatestInterviews } from '@/lib/actions/auth.action'
+import { getCurrentUser } from '@/lib/actions/auth.action'
+import { getInterviewsByUserId, getLatestInterviews } from '@/lib/actions/general.action'
 
 const page = async () => {
 

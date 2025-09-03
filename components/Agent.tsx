@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation";
 import { vapi } from '@/lib/vapi.sdk'
 import React, { useState, useEffect } from 'react'
+import { interviewer } from "@/constants";
 
 enum CallStatus {
   INACTIVE = 'INACTIVE',
@@ -19,7 +20,7 @@ interface SavedMessage {
 }
 
 
-const Agent = ({userName, userId, type}: AgentProps) => {
+const Agent = ({userName, userId, type, interviewId, questions}: AgentProps) => {
 
   const router = useRouter();
 
@@ -67,13 +68,37 @@ const Agent = ({userName, userId, type}: AgentProps) => {
     }
   }, []);
 
+  const handleGenerateFeedback =  async (messages: SavedMessage[]) => {
+    console.log('Generate feedback here');
+
+    const {success, id} = {
+      success: true,
+      id: 'feedback-id'
+    }
+
+    //Todo: createa server action that generate feedback
+    if(success && id) {
+      router.push(`/interview/${interviewId}/feedback`);
+    } else {
+      console.log('Error saving feedback');
+      router.push('/');
+    }
+  }
+
   useEffect(() => {
-    if(callStatus === CallStatus.FINISHED) router.push('/')
-  },[messages, callStatus, type, userId, router]);
+    if(callStatus === CallStatus.FINISHED) {
+      if(type === 'generate'){
+        router.push('/')
+      } else {
+        handleGenerateFeedback(messages);
+      }
+    }
+  },[messages, callStatus, type, userId]);
 
   const handleCall = async() => {
     setCallStatus(CallStatus.CONNECTING);
 
+    if(type === 'generate'){
       await vapi.start(
         undefined,
         undefined,
@@ -85,7 +110,22 @@ const Agent = ({userName, userId, type}: AgentProps) => {
             userid: userId,
           },
         }
-      );
+      )
+    } else {
+      let formattedQuestions = '';
+
+      if(questions) {
+        formattedQuestions = questions
+        .map((questions) => `- ${questions}`)
+        .join('/n');
+      }
+
+      await vapi.start(interviewer, {
+        variableValues: {
+          questions: formattedQuestions
+        }
+      })
+    }
   }
 
   const handleDisconnect = async() => {

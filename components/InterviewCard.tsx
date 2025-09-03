@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import DisplayTechIcons from './DisplayTechIcons';
 
 //coming from dummyInterview constants
-const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}
+const InterviewCard = ({id, userId, role, type, techstack, createdAt}
     : InterviewCardProps
 ) => {
 
@@ -60,11 +60,12 @@ const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}
 
             <Button className='btn-primary'>
                 <Link href={feedback ?
-                    `/interview/${interviewId}/feedback`
-                    : `/interview/${interviewId}`
+                    `/interview/${id}/feedback`
+                    : `/interview/${id}`
                 }
-                />
+                >
                 {feedback ? 'check feedback' : 'View Interview'}
+                </Link>
             </Button>
         </div>
 
